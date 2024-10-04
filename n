@@ -1,1 +1,440 @@
--- script
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
+local window = DrRayLibrary:Load("AUT TRAITS", "Default")
+local tab = DrRayLibrary.newTab("MAIN", "ImageIdHere")
+
+tab.newButton("TP to altar", "Use before starting dio farm", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(19090.056640625, 910.5473022460938, 119.43755340576172)
+end)
+
+tab.newToggle("Auto Dio", "Recommended ping lower than 250", false, function(toggleState)
+    if toggleState then
+        getgenv().AutoFarmForDio = true
+        getgenv().AutoFarmDioBoss = true
+
+local function teleportToBossAltar()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(19090.056640625, 910.5473022460938, 119.43755340576172)
+end
+
+getgenv().AutoFarm = false
+
+tab.newToggle("Auto Dio", "Recommended ping lower than 250", false, function(toggleState)
+    getgenv().AutoFarm = toggleState
+    
+    if toggleState then
+        startAutoFarm()
+    else
+        stopAutoFarm()
+    end
+end)
+
+function startAutoFarm()
+    local function teleportToBossAltar()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(19090.056640625, 910.5473022460938, 119.43755340576172)
+    end
+
+    local function spawnDio()
+        local args = {
+            [1] = "Spawn Boss Altar",
+            [2] = "Dio",
+            [3] = workspace:WaitForChild("NPCSpawns"):WaitForChild("Boss Altar"):WaitForChild("Spawn"):WaitForChild("Part")
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("NpcFunc"):InvokeServer(unpack(args))
+    end
+
+    local function clearEffects()
+        task.spawn(function()
+            while getgenv().AutoFarm do
+                pcall(function()
+                    local effects = workspace.Effects:GetChildren()
+                    for i = #effects, 1, -1 do
+                        local v = effects[i]
+                        if v.Name == "Hold up, aint you Dio?" or v.Name == "FIRE" or v.Name == 'blood' then
+                            v:Destroy()
+                        end
+                    end
+                end)
+                task.wait(0.01)
+            end
+        end)
+    end
+
+    local function targetDio()
+        task.spawn(function()
+            while getgenv().AutoFarm do
+                pcall(function()
+                    getgenv().Target = nil
+                    for _, x in ipairs(workspace.Living:GetChildren()) do
+                        if string.find(x.Name, "Dio") then
+                            getgenv().Target = x
+                            break
+                        end
+                    end
+                end)
+                task.wait(0.01)
+            end
+        end)
+    end
+
+    local function moveToTarget()
+        task.spawn(function()
+            while getgenv().AutoFarm do
+                pcall(function()
+                    local target = getgenv().Target
+                    if target and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Humanoid.Health > 0 then
+                        local humanoidRootPart = game.Players.LocalPlayer.Character.HumanoidRootPart
+                        local targetPosition = target.HumanoidRootPart.Position
+                        local offset = target.HumanoidRootPart.CFrame.LookVector * -4
+                        humanoidRootPart.CFrame = CFrame.new(targetPosition + offset, targetPosition)
+                    end
+                end)
+                task.wait(0.01)
+            end
+        end)
+    end
+
+    local function oneShotEnemies()
+        task.spawn(function()
+            local connection
+            connection = game:GetService("RunService").RenderStepped:Connect(function()
+                if getgenv().AutoFarm then
+                    pcall(function()
+                        for _, k in ipairs(workspace.Living:GetChildren()) do
+                            if k:IsA("Model") and k:FindFirstChild("Head") and k.Head:IsA("Part") and k.Head.Name == "Head" and k.Head ~= game.Players.LocalPlayer.Character.Head then
+                                if (k.Head.Position - game.Players.LocalPlayer.Character.Head.Position).magnitude <= 35 then
+                                    if k:FindFirstChildOfClass("Humanoid").Health ~= k:FindFirstChildOfClass("Humanoid").MaxHealth then 
+                                        k:FindFirstChildOfClass("Humanoid").Health = 0
+                                    end
+                                end
+                            end
+                        end
+                    end)
+                else
+                    connection:Disconnect()
+                end
+            end)
+        end)
+    end
+
+    local function attackM1(target)
+        local attackArgsM1 = { [1] = "MouseButton1" }
+        local replicatedStorage = game:GetService("ReplicatedStorage")
+        local knitPackage = replicatedStorage:WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage")
+        local knit = knitPackage:WaitForChild("Knit")
+        local services = knit:WaitForChild("Services")
+        local moveInputService = services:WaitForChild("MoveInputService")
+        local remoteFunction = moveInputService:WaitForChild("RF"):WaitForChild("FireInput")
+
+        remoteFunction:InvokeServer(unpack(attackArgsM1))
+    end
+
+    local function monitorTarget()
+        task.spawn(function()
+            while getgenv().AutoFarm do
+                pcall(function()
+                    local target = getgenv().Target
+                    if target and target:FindFirstChild("Humanoid") and target.Humanoid.Health > 0 then
+                        while getgenv().AutoFarm and target and target.Humanoid.Health > 0 do
+                            attackM1(target)
+                            task.wait(0.5)
+                        end
+                    end
+                end)
+                task.wait(0.01)
+            end
+        end)
+    end
+
+    local function spawnDioWithCooldown()
+        task.spawn(function()
+            while getgenv().AutoFarm do
+                if not game.Players[game.Players.LocalPlayer.Name].Cooldowns:FindFirstChild("Rush Attack") then
+                    teleportToBossAltar()
+                    spawnDio()
+                end
+                task.wait(2)
+            end
+        end)
+    end
+
+    clearEffects()
+    targetDio()
+    moveToTarget()
+    oneShotEnemies()
+    monitorTarget()
+    spawnDioWithCooldown()
+end
+
+function stopAutoFarm()
+    getgenv().AutoFarm = false
+    getgenv().Target = nil
+end
+
+tab.newToggle("Auto Attack Dio", "Attack Dio if alive for 4 seconds", false, function(toggleState)
+    if toggleState then
+        getgenv().AutoAttackDio = true
+
+        local dioAliveTime = 0
+        local targetDio = nil
+
+        task.spawn(function()
+            while getgenv().AutoAttackDio do
+                task.wait(0.1)
+                if targetDio and targetDio:FindFirstChild("Humanoid") and targetDio.Humanoid.Health > 0 then
+                    dioAliveTime = dioAliveTime + 0.1
+                    if dioAliveTime >= 4 then
+                        for i = 1, 5 do
+                            attackM1(targetDio)
+                            task.wait(0.5)
+                        end
+                    end
+                else
+                    dioAliveTime = 0
+                    targetDio = nil
+                end
+            end
+        end)
+
+        task.spawn(function()
+            while getgenv().AutoAttackDio do
+                task.wait(0.1)
+                for _, creature in ipairs(workspace.Living:GetChildren()) do
+                    if string.find(creature.Name, "Dio") then
+                        targetDio = creature
+                        dioAliveTime = 0
+                        break
+                    end
+                end
+            end
+        end)
+    else
+        getgenv().AutoAttackDio = false
+    end
+end)
+
+
+
+local options = {
+    "Prime", "Overconfident Prime", "Solar", "Icarus Solar", 
+    "Cursed", "Undying Cursed", "Vampiric", "Ancient Vampiric", 
+    "Gluttonous", "Festering Gluttonous", "Voided", "Abyssal Voided", 
+    "Gambler", "Idle Death Gambler", "Overflowing", "Torrential Overflowing", 
+    "Deferred", "Fractured Deferred", "True", "Vitriolic True", 
+    "Cultivation", "Soul Reaping Cultivation", "Economic", "Greedy Economic", 
+    "Angelic", "Fallen Angelic", "Godly", "Egotistic Godly", 
+    "Temporal", "FTL Temporal", "Spiritual", "Psychotic Spiritual", 
+    "Ryoiki", "Heavenly Restricted Ryoiki", "RCT", "Automatic RCT"
+}
+local selectedTraits = {}
+
+tab.newDropdown("AUTO TRAIT", "Select one of these traits", options, function(selectedOption)
+    if not table.find(selectedTraits, selectedOption) then
+        table.insert(selectedTraits, selectedOption)
+    end
+end)
+
+tab.newToggle("Auto trait", "Enable Auto Picking Traits", false, function(toggleState)
+    getgenv().AutoPickingTraits = toggleState
+
+    if toggleState then
+        task.spawn(function()
+            while getgenv().AutoPickingTraits do 
+                if game:GetService("Players").LocalPlayer.PlayerGui.UI.Gameplay.TraitHandPrompt.Visible then
+                    local OpenTraitMenu = game:GetService("Players").LocalPlayer.PlayerGui.UI.Gameplay.MoveHandPrompt.TextLabel
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(OpenTraitMenu.AbsolutePosition.X + OpenTraitMenu.AbsoluteSize.X / 1.5, OpenTraitMenu.AbsolutePosition.Y + 37, 0, true, OpenTraitMenu, 4.5)
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(OpenTraitMenu.AbsolutePosition.X + OpenTraitMenu.AbsoluteSize.X / 1.5, OpenTraitMenu.AbsolutePosition.Y + 37, 0, false, OpenTraitMenu, 4.5)
+                end
+                task.wait(1.35)
+
+                if game:GetService("Players").LocalPlayer.PlayerGui.UI.Gameplay.TraitHands.Visible and game:GetService("Players").LocalPlayer.PlayerGui.UI.Gameplay.TraitHands.ShowAll.Visible then
+                    local RevealEverything = game:GetService("Players").LocalPlayer.PlayerGui.UI.Gameplay.TraitHands.ShowAll.TextLabel
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(RevealEverything.AbsolutePosition.X + RevealEverything.AbsoluteSize.X / 1.5, RevealEverything.AbsolutePosition.Y + 37, 0, true, RevealEverything, 4.5)
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(RevealEverything.AbsolutePosition.X + RevealEverything.AbsoluteSize.X / 1.5, RevealEverything.AbsolutePosition.Y + 37, 0, false, RevealEverything, 4.5)
+                end
+                task.wait(1.25)
+            end
+        end)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        pcall(function()
+            if not getgenv().AutoPickingTraits then return end
+            
+            local TraitHolder = game:GetService("Players").LocalPlayer.PlayerGui.UI.Gameplay.TraitHands.Holder            
+            local TraitHolders = {TraitHolder["1"].Content.Title.Label, TraitHolder["2"].Content.Title.Label, TraitHolder["3"].Content.Title.Label}
+            local DiscardTrait = game:GetService("Players").LocalPlayer.PlayerGui.UI.Gameplay.TraitHands.Discard.TextLabel
+
+            if game:GetService("Players").LocalPlayer.PlayerGui.UI.Gameplay.TraitHands.Visible then
+                local FoundTrait = false
+                for _, v in ipairs(TraitHolders) do
+                    for _, x in ipairs(selectedTraits) do
+                        if v.Text:match(x) then
+                            FoundTrait = true
+                            game:GetService("VirtualInputManager"):SendMouseButtonEvent(v.AbsolutePosition.X + v.AbsoluteSize.X / 1.5, v.AbsolutePosition.Y + 37, 0, true, v, 4.5)
+                            game:GetService("VirtualInputManager"):SendMouseButtonEvent(v.AbsolutePosition.X + v.AbsoluteSize.X / 1.5, v.AbsolutePosition.Y + 37, 0, false, v, 4.5)
+                            task.wait(0.51)
+
+                            for _, x in ipairs(game:GetService("Players").LocalPlayer.PlayerGui.UI.Prompt.Frame.Buttons:GetChildren()) do
+                                if x:IsA("TextButton") then
+                                    if x:FindFirstChildOfClass("TextLabel").Text == "Yes" then
+                                        game:GetService("VirtualInputManager"):SendMouseButtonEvent(x.AbsolutePosition.X + x.AbsoluteSize.X / 1.5, x.AbsolutePosition.Y + 37, 0, true, x, 4.5)
+                                        task.wait(0.1)
+                                        game:GetService("VirtualInputManager"):SendMouseButtonEvent(x.AbsolutePosition.X + x.AbsoluteSize.X / 1.5, x.AbsolutePosition.Y + 37, 0, false, x, 4.5)
+                                    end
+                                end
+                            end
+                            task.spawn(function()
+                                task.wait(5.15)
+                                getgenv().AutoPickingTraits = false
+                            end)
+                        end
+                    end
+                end
+                
+                if not FoundTrait then
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(DiscardTrait.AbsolutePosition.X + DiscardTrait.AbsoluteSize.X / 1.5, DiscardTrait.AbsolutePosition.Y + 37, 0, true, DiscardTrait, 4.5)
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(DiscardTrait.AbsolutePosition.X + DiscardTrait.AbsoluteSize.X / 1.5, DiscardTrait.AbsolutePosition.Y + 37, 0, false, DiscardTrait, 4.5)
+                    task.wait(0.51)
+                    
+                    for _, x in ipairs(game:GetService("Players").LocalPlayer.PlayerGui.UI.Prompt.Frame.Buttons:GetChildren()) do
+                        if x:IsA("TextButton") then
+                            if x:FindFirstChildOfClass("TextLabel").Text == "Yes" then
+                                game:GetService("VirtualInputManager"):SendMouseButtonEvent(x.AbsolutePosition.X + x.AbsoluteSize.X / 1.5, x.AbsolutePosition.Y + 37, 0, true, x, 4.5)
+                                task.wait(0.1)
+                                game:GetService("VirtualInputManager"):SendMouseButtonEvent(x.AbsolutePosition.X + x.AbsoluteSize.X / 1.5, x.AbsolutePosition.Y + 37, 0, false, x, 4.5)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        task.wait(1.25)
+    end
+end)
+
+tab.newToggle("Auto Zoro Quest", "Like 100k coins in 5 seconds", false, function(toggleState)
+    if toggleState then
+        getgenv().AutoCompleteZoroQuest = false
+    else
+        getgenv().AutoCompleteZoroQuest = true
+    
+task.spawn(function()
+    while getgenv().AutoCompleteZoroQuest == true do
+        pcall(function()
+            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
+            local args = {[1] = "Zoros_Swords_Adventure"};
+            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("DialogueService"):WaitForChild("RF"):WaitForChild("CheckDialogue"):InvokeServer(unpack(args));
+            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
+            local args = {[1] = "Zoros_Swords_Adventure"};
+            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("DialogueService"):WaitForChild("RF"):WaitForChild("CheckDialogue"):InvokeServer(unpack(args));
+            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
+            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
+        end)
+        task.wait(0.015);
+    end
+end)
+    end
+end)
+
+tab.newToggle("Auto Attack Stats", "Automatically apply stats on attack (for good dio farm)", false, function(toggleState)
+    if toggleState then
+        getgenv().AutoApplyingStats = true
+
+        task.spawn(function()
+            while getgenv().AutoApplyingStats do
+                pcall(function()
+                    local player = game:GetService("Players").LocalPlayer
+                    local abilityId = player:WaitForChild("Data"):WaitForChild("Ability").Value
+
+                    local args = {
+                        [1] = abilityId,
+                        [2] = {
+                            ["Defense"] = 0,
+                            ["Special"] = 0,
+                            ["Health"] = 0,
+                            ["Attack"] = 200
+                        }
+                    }
+
+                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("StatService"):WaitForChild("RF"):WaitForChild("ApplyStats"):InvokeServer(unpack(args))
+                end)
+                task.wait(1)
+            end
+        end)
+    else
+        getgenv().AutoApplyingStats = false
+    end
+end)
+
+tab.newToggle("Auto Ascension", "Just ascensions", false, function(toggleState)
+    if toggleState then
+            getgenv().AutoAscending = true
+
+    task.spawn(function()
+        while getgenv().AutoAscending do
+            pcall(function()
+                if game:GetService("Players").LocalPlayer:WaitForChild("Data"):WaitForChild("Ability"):GetAttribute("AbilityLevel") == 200 then
+                    local args = {[1] = game:GetService("Players").LocalPlayer:WaitForChild("Data"):WaitForChild("Ability").Value}
+                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("LevelService"):WaitForChild("RF"):WaitForChild("AscendAbility"):InvokeServer(unpack(args))
+                end
+            end)
+            task.wait(0.35)
+        end
+    end)
+    else
+        getgenv().AutoAscending = false
+    end
+end)
+
+local tab = DrRayLibrary.newTab("Private servers", "ImageIdHere")
+
+tab.newButton("Heck vip servers😈 ", "Wait until it gets code (ONLY USE IT IN LOBBY)", function()
+    local Players = game:GetService("Players")
+local ScreenGui = Instance.new("ScreenGui")
+local TextLabel = Instance.new("TextLabel")
+
+ScreenGui.Name = "CodeDisplay"
+ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+TextLabel.Name = "CodeLabel"
+TextLabel.Size = UDim2.new(0.3, 0, 0.1, 0)
+TextLabel.Position = UDim2.new(0.5, -TextLabel.Size.X.Offset / 2, 0.5, -TextLabel.Size.Y.Offset / 2)
+TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.TextColor3 = Color3.fromRGB(0, 0, 255)
+TextLabel.TextScaled = true
+TextLabel.Text = "Current Code: "
+TextLabel.Parent = ScreenGui
+
+local function invokeSingleCode(alphabet, combinationLength, currentCombination, depth)
+    if depth == combinationLength then
+        print("Generated Code: " .. currentCombination)
+        TextLabel.Text = "Current Code: " .. currentCombination
+        local args = {
+            [1] = "JoinCode",
+            [2] = {
+                ["Code"] = currentCombination
+            }
+        }
+        local replicatedStorage = game:GetService("ReplicatedStorage")
+        local privateCodeService = replicatedStorage:WaitForChild
+if privateCodeService:FindFirstChild("Invoke") then
+            privateCodeService:WaitForChild("Invoke"):InvokeServer(unpack(args))
+        else
+            warn("Invoke method not found!")
+        end
+        return
+    end
+
+    for i = 1, #alphabet do
+        invokeSingleCode(alphabet, combinationLength, currentCombination .. alphabet:sub(i, i), depth + 1)
+        TextLabel.Text = "Current Code: " .. currentCombination .. alphabet:sub(i, i)
+        task.wait(0.0001)
+    end
+end
+
+local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+local combinationLength = 5
+
+invokeSingleCode(alphabet, combinationLength, "", 0)
+end)
