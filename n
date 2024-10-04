@@ -6,15 +6,6 @@ tab.newButton("TP to altar", "Use before starting dio farm", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(19090.056640625, 910.5473022460938, 119.43755340576172)
 end)
 
-tab.newToggle("Auto Dio", "Recommended ping lower than 250", false, function(toggleState)
-    if toggleState then
-        getgenv().AutoFarmForDio = true
-        getgenv().AutoFarmDioBoss = true
-
-local function teleportToBossAltar()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(19090.056640625, 910.5473022460938, 119.43755340576172)
-end
-
 getgenv().AutoFarm = false
 
 tab.newToggle("Auto Dio", "Recommended ping lower than 250", false, function(toggleState)
@@ -169,48 +160,6 @@ function stopAutoFarm()
     getgenv().Target = nil
 end
 
-tab.newToggle("Auto Attack Dio", "Attack Dio if alive for 4 seconds", false, function(toggleState)
-    if toggleState then
-        getgenv().AutoAttackDio = true
-
-        local dioAliveTime = 0
-        local targetDio = nil
-
-        task.spawn(function()
-            while getgenv().AutoAttackDio do
-                task.wait(0.1)
-                if targetDio and targetDio:FindFirstChild("Humanoid") and targetDio.Humanoid.Health > 0 then
-                    dioAliveTime = dioAliveTime + 0.1
-                    if dioAliveTime >= 4 then
-                        for i = 1, 5 do
-                            attackM1(targetDio)
-                            task.wait(0.5)
-                        end
-                    end
-                else
-                    dioAliveTime = 0
-                    targetDio = nil
-                end
-            end
-        end)
-
-        task.spawn(function()
-            while getgenv().AutoAttackDio do
-                task.wait(0.1)
-                for _, creature in ipairs(workspace.Living:GetChildren()) do
-                    if string.find(creature.Name, "Dio") then
-                        targetDio = creature
-                        dioAliveTime = 0
-                        break
-                    end
-                end
-            end
-        end)
-    else
-        getgenv().AutoAttackDio = false
-    end
-end)
-
 
 
 local options = {
@@ -313,63 +262,96 @@ task.spawn(function()
     end
 end)
 
+tab.newToggle("Auto Attack", "M1 spam", false, function(toggleState)
+    if toggleState then
+        getgenv().AutoAttackDio = true
+
+        local replicatedStorage = game:GetService("ReplicatedStorage")
+        local knitPackage = replicatedStorage:WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage")
+        local knit = knitPackage:WaitForChild("Knit")
+        local services = knit:WaitForChild("Services")
+        local moveInputService = services:WaitForChild("MoveInputService")
+        local remoteFunction = moveInputService:WaitForChild("RF"):WaitForChild("FireInput")
+
+        local function attackM1()
+            local attackArgsM1 = { [1] = "MouseButton1" }
+            remoteFunction:InvokeServer(unpack(attackArgsM1))
+        end
+
+        task.spawn(function()
+            while getgenv().AutoAttackDio do
+                attackM1()
+                task.wait(0.1)
+            end
+        end)
+    else
+        getgenv().AutoAttackDio = false
+    end
+end)
+
+
 tab.newToggle("Auto Zoro Quest", "Like 100k coins in 5 seconds", false, function(toggleState)
     if toggleState then
-        getgenv().AutoCompleteZoroQuest = false
-    else
         getgenv().AutoCompleteZoroQuest = true
+    else
+        getgenv().AutoCompleteZoroQuest = false
+    end
     
-task.spawn(function()
-    while getgenv().AutoCompleteZoroQuest == true do
-        pcall(function()
-            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
-            local args = {[1] = "Zoros_Swords_Adventure"};
-            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("DialogueService"):WaitForChild("RF"):WaitForChild("CheckDialogue"):InvokeServer(unpack(args));
-            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
-            local args = {[1] = "Zoros_Swords_Adventure"};
-            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("DialogueService"):WaitForChild("RF"):WaitForChild("CheckDialogue"):InvokeServer(unpack(args));
-            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
-            game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
-        end)
-        task.wait(0.015);
-    end
+    task.spawn(function()
+        while getgenv().AutoCompleteZoroQuest == true do
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
+                local args = {[1] = "Zoros_Swords_Adventure"};
+                game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("DialogueService"):WaitForChild("RF"):WaitForChild("CheckDialogue"):InvokeServer(unpack(args));
+                game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
+                local args = {[1] = "Zoros_Swords_Adventure"};
+                game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("DialogueService"):WaitForChild("RF"):WaitForChild("CheckDialogue"):InvokeServer(unpack(args));
+                game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
+                game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("AdventureService"):WaitForChild("RF"):WaitForChild("PickedUpSword"):InvokeServer();
+            end)
+            task.wait(0.015);
+        end
+    end)
 end)
-    end
-end)
+
 
 tab.newToggle("Auto Attack Stats", "Automatically apply stats on attack (for good dio farm)", false, function(toggleState)
     if toggleState then
         getgenv().AutoApplyingStats = true
-
-        task.spawn(function()
-            while getgenv().AutoApplyingStats do
-                pcall(function()
-                    local player = game:GetService("Players").LocalPlayer
-                    local abilityId = player:WaitForChild("Data"):WaitForChild("Ability").Value
-
-                    local args = {
-                        [1] = abilityId,
-                        [2] = {
-                            ["Defense"] = 0,
-                            ["Special"] = 0,
-                            ["Health"] = 0,
-                            ["Attack"] = 200
-                        }
-                    }
-
-                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("StatService"):WaitForChild("RF"):WaitForChild("ApplyStats"):InvokeServer(unpack(args))
-                end)
-                task.wait(1)
-            end
-        end)
     else
         getgenv().AutoApplyingStats = false
     end
+
+    task.spawn(function()
+        while getgenv().AutoApplyingStats do
+            pcall(function()
+                local player = game:GetService("Players").LocalPlayer
+                local abilityId = player:WaitForChild("Data"):WaitForChild("Ability").Value
+
+                local args = {
+                    [1] = abilityId,
+                    [2] = {
+                        ["Defense"] = 0,
+                        ["Special"] = 0,
+                        ["Health"] = 0,
+                        ["Attack"] = 200
+                    }
+                }
+
+                game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("StatService"):WaitForChild("RF"):WaitForChild("ApplyStats"):InvokeServer(unpack(args))
+            end)
+            task.wait(1)
+        end
+    end)
 end)
+
 
 tab.newToggle("Auto Ascension", "Just ascensions", false, function(toggleState)
     if toggleState then
-            getgenv().AutoAscending = true
+        getgenv().AutoAscending = true
+    else
+        getgenv().AutoAscending = false
+    end
 
     task.spawn(function()
         while getgenv().AutoAscending do
@@ -382,9 +364,6 @@ tab.newToggle("Auto Ascension", "Just ascensions", false, function(toggleState)
             task.wait(0.35)
         end
     end)
-    else
-        getgenv().AutoAscending = false
-    end
 end)
 
 local tab = DrRayLibrary.newTab("Private servers", "ImageIdHere")
@@ -417,8 +396,8 @@ local function invokeSingleCode(alphabet, combinationLength, currentCombination,
             }
         }
         local replicatedStorage = game:GetService("ReplicatedStorage")
-        local privateCodeService = replicatedStorage:WaitForChild
-if privateCodeService:FindFirstChild("Invoke") then
+        local privateCodeService = replicatedStorage:WaitForChild("ReplicatedModules"):WaitForChild("KnitPackage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("PrivateCodeService"):WaitForChild("RF")
+        if privateCodeService:FindFirstChild("Invoke") then
             privateCodeService:WaitForChild("Invoke"):InvokeServer(unpack(args))
         else
             warn("Invoke method not found!")
