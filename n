@@ -1,5 +1,5 @@
 local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
-local window = DrRayLibrary:Load("AUT TRAITS", "Default")
+local window = DrRayLibrary:Load("X5 AUT", "Default")
 local tab = DrRayLibrary.newTab("MAIN", "ImageIdHere")
 
 tab.newButton("TP to altar", "Use before starting dio farm", function()
