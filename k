@@ -1,6 +1,6 @@
 local allowedUsers = {
     [2614817092] = true,
-    [87654321] = true,
+    [3581345275] = true,
     -- Add other UserIds here
 }
 
