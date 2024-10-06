@@ -171,7 +171,7 @@ local options = {
     "Cultivation", "Soul Reaping Cultivation", "Economic", "Greedy Economic", 
     "Angelic", "Fallen Angelic", "Godly", "Egotistic Godly", 
     "Temporal", "FTL Temporal", "Spiritual", "Psychotic Spiritual", 
-    "Ryoiki", "Heavenly Restricted Ryoiki", "RCT", "Automatic RCT"
+    "Ryoiki", "Heavenly Restricted Ryoiki", "RCT", "Automatic RCT", "Adaptation", "Unbound Adaptation" 
 }
 local selectedTraits = {}
 
