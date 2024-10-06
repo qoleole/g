@@ -285,7 +285,7 @@ tab.newToggle("Auto Attack", "M1 spam", false, function(toggleState)
         task.spawn(function()
             while getgenv().AutoAttackDio do
                 attackM1()
-                task.wait(0.1)
+                task.wait(0.001)
             end
         end)
     else
