@@ -513,6 +513,83 @@ if player.Character then
 end
 
 
+
+local tab = DrRayLibrary.newTab("Teleports", "ImageIdHere")
+
+tab.newButton("Subway area", "Teleports subway area", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-16740.908203125, 7, -5996.34765625)
+end)
+
+tab.newButton("Shibuya", "Teleports to Shibuya", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(254.5633544921875, 5.149999618530273, -9882.0517578125)
+end)
+
+tab.newButton("Park", "Teleports to Park", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2077.3916015625, 973.98974609375, 316.0052490234375)
+end)
+
+tab.newButton("Port", "Teleports to Port", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2022.12255859375, 921.7739868164062, 1065.4537353515625)
+end)
+
+tab.newButton("Joestar's Mansion", "Teleports to Joestar's Mansion", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2735.2080078125, 918.569091796875, 5408.98193359375)
+end)
+
+tab.newButton("Colosseum", "Teleports to Colosseum", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1012.2515258789062, 934.3607177734375, 2907.20654296875)
+end)
+
+tab.newButton("Football Field", "Teleports to Football Field", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1977.9949951171875, 973.794189453125, -395.08758544921875)
+end)
+
+tab.newButton("Realm of the Forgotten", "Teleports to Realm of the Forgotten", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(19107.20703125, 910.52294921875, 114.52945709228516)
+end)
+
+tab.newButton("Eternal Cairn", "Teleports to Eternal Cairn", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2786.587890625, 1021.133544921875, -719.89453125)
+end)
+
+tab.newButton("Floating Village", "Teleports to Floating Village", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1105.0628662109375, 1008.9530639648438, -353.5179748535156)
+end)
+
+tab.newButton("Desert", "Teleports to Desert", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1970.1712646484375, 927.6431884765625, -1557.1044921875)
+end)
+
+tab.newButton("Alabasta", "Teleports to Alabasta", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2141.83984375, 915.1470947265625, -2491.882080078125)
+end)
+
+tab.newButton("Devil's Palm and The Beach", "Teleports to Devil's Palm and The Beach", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(797.6642456054688, 951.7186889648438, -1960.879150390625)
+end)
+
+tab.newButton("Knight's Cavern", "Teleports to Knight's Cavern", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3495.911865234375, 937.5919189453125, -430.0540466308594)
+end)
+
+tab.newButton("Black Market 1", "Teleports to Black Market 1", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2449.603271484375, 982.1358642578125, 112.19632720947266)
+end)
+
+tab.newButton("Black Market 2", "Teleports to Black Market 2", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2028.6873779296875, 1063.329833984375, -773.0180053710938)
+end)
+
+tab.newButton("Black Market 3", "Teleports to Black Market 3", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(955.3364868164062, 1008.953125, -446.6356506347656)
+end)
+
+tab.newButton("Black Market 4", "Teleports to Black Market 4", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2015.0723876953125, 921.77392578125, 1066.2608642578125)
+end)
+
+
+
 local tab = DrRayLibrary.newTab("Private servers", "ImageIdHere")
 
 tab.newButton("Heck vip servers😈 ", "Wait until it gets code (ONLY USE IT IN LOBBY)", function()
