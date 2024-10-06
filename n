@@ -494,7 +494,7 @@ local function onCharacterDied()
     followNearestTarget()
 end
 
-tab.newToggle("Auto curses with auto chests", "Teleport to desert before enabling and reaper is good for this", false, function(toggleState)
+tab.newToggle("Auto curses with auto chests", "Teleport to desert before enabling and reaper is good for this USE M1 SPAM IN MAIN", false, function(toggleState)
     getgenv().EnableScript = toggleState
 
     if toggleState then
