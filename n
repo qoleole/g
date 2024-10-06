@@ -10,7 +10,7 @@ getgenv().AutoFarm = false
 
 tab.newToggle("Auto Dio", "Recommended ping lower than 250", false, function(toggleState)
     getgenv().AutoFarm = toggleState
-    
+
     if toggleState then
         startAutoFarm()
     else
@@ -89,11 +89,14 @@ function startAutoFarm()
             connection = game:GetService("RunService").RenderStepped:Connect(function()
                 if getgenv().AutoFarm then
                     pcall(function()
+                        sethiddenproperty(game:GetService("Players").LocalPlayer, "SimulationRadius", math.huge)
                         for _, k in ipairs(workspace.Living:GetChildren()) do
                             if k:IsA("Model") and k:FindFirstChild("Head") and k.Head:IsA("Part") and k.Head.Name == "Head" and k.Head ~= game.Players.LocalPlayer.Character.Head then
                                 if (k.Head.Position - game.Players.LocalPlayer.Character.Head.Position).magnitude <= 35 then
-                                    if k:FindFirstChildOfClass("Humanoid").Health ~= k:FindFirstChildOfClass("Humanoid").MaxHealth then 
-                                        k:FindFirstChildOfClass("Humanoid").Health = 0
+                                    if k:FindFirstChildOfClass("Humanoid").Health ~= k:FindFirstChildOfClass("Humanoid").MaxHealth then
+                                        k:FindFirstChildOfClass("Humanoid").Health = -9e9
+                                        k:FindFirstChildOfClass("Humanoid").MaxHealth = -9e9
+                                        k:FindFirstChildOfClass("Humanoid"):SetAttribute("BaseHealth", 0)
                                     end
                                 end
                             end
@@ -159,6 +162,7 @@ function stopAutoFarm()
     getgenv().AutoFarm = false
     getgenv().Target = nil
 end
+
 
 
 
