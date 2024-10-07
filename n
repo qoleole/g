@@ -396,13 +396,16 @@ end
 local function findNearestTarget()
     local nearestDistance = math.huge
     local nearestTarget = nil
+    local targetList = {"Jujutsu Sorcerer", "Flyhead", "Roppongi Curse", "Mantis Curse"}
 
     for _, obj in ipairs(workspace.Living:GetChildren()) do
-        if obj.Name:find("Jujutsu Sorcerer") and obj:FindFirstChild("HumanoidRootPart") then
-            local distance = (player.Character.HumanoidRootPart.Position - obj.HumanoidRootPart.Position).Magnitude
-            if distance < nearestDistance then
-                nearestDistance = distance
-                nearestTarget = obj
+        for _, targetName in ipairs(targetList) do
+            if obj.Name:find(targetName) and obj:FindFirstChild("HumanoidRootPart") then
+                local distance = (player.Character.HumanoidRootPart.Position - obj.HumanoidRootPart.Position).Magnitude
+                if distance < nearestDistance then
+                    nearestDistance = distance
+                    nearestTarget = obj
+                end
             end
         end
     end
@@ -426,6 +429,23 @@ local function collectItem(item)
     end
 end
 
+local chestSpawnTime = {}
+
+local function removeOldChests()
+    for _, item in ipairs(workspace:GetChildren()) do
+        if item:IsA("Model") and item.Name:match("Chest") then
+            if not chestSpawnTime[item] then
+                chestSpawnTime[item] = tick()
+            else
+                if tick() - chestSpawnTime[item] > 4 then
+                    item:Destroy()
+                    chestSpawnTime[item] = nil
+                end
+            end
+        end
+    end
+end
+
 local function checkForItems()
     if getgenv().EnableScript then
         local itemExists = false
@@ -435,6 +455,7 @@ local function checkForItems()
                 itemExists = true
             end
         end
+        removeOldChests()
         return itemExists
     end
     return false
@@ -490,7 +511,7 @@ end
 
 local function onCharacterDied()
     player.CharacterAdded:Wait()
-    wait(0.5)
+    wait(6)
     followNearestTarget()
 end
 
@@ -511,6 +532,7 @@ end)
 if player.Character then
     followNearestTarget()
 end
+
 
 
 
