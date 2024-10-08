@@ -663,3 +663,10 @@ local combinationLength = 5
 
 invokeSingleCode(alphabet, combinationLength, "", 0)
 end)
+
+local tab = DrRayLibrary.newTab("Credits", "ImageIdHere")
+
+tab.newButton("Discord", "Discord link", function()
+setclipboard("https://discord.com/invite/jkpUndyFvw")
+toclipboard("https://discord.com/invite/jkpUndyFvw")
+end)
