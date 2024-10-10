@@ -338,7 +338,7 @@ tab.newToggle("Auto Attack Stats", "Automatically apply stats on attack (for goo
                         ["Defense"] = 0,
                         ["Special"] = 0,
                         ["Health"] = 0,
-                        ["Attack"] = 200
+                        ["Attack"] = 5
                     }
                 }
 
